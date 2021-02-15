@@ -37,22 +37,24 @@ class Expenses extends Component {
             </FormGroup>
 
             <FormGroup>
-              <label for="expenseDate">Expense Date</label>
+              <label for="city">Date</label>
               <DatePicker
                 selected={this.state.date}
                 onChange={this.handleChange}
               />
             </FormGroup>
 
-            <FormGroup>
-              <label for="location">Location</label>
-              <Input
-                type="text"
-                name="location"
-                id="location"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
+            <div className="row">
+              <FormGroup className="col-md-4 mb-3">
+                <label for="location">Location</label>
+                <Input
+                  type="text"
+                  name="location"
+                  id="location"
+                  onChange={this.handleChange}
+                />
+              </FormGroup>
+            </div>
 
             <FormGroup>
               <Button color="primary" type="submit">
