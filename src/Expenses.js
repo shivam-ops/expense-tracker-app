@@ -7,9 +7,23 @@ import { Container, Input, Form, Button, FormGroup } from "reactstrap";
 import { Link } from "react-router-dom";
 
 class Expenses extends Component {
-  state = {};
+  state = { date: new Date(), isLoading: true, expenses: [], categories: [] };
+
+  async componentDidMount() {
+    const response = await fetch("/api/categories");
+    const body = await response.json();
+
+    this.setState({ categories: body, isLoading: false });
+  }
+
   render() {
     const title = <h3>Add Expense</h3>;
+    const { categories, isLoading } = this.state;
+
+    if (isLoading) {
+      return <div>Loading...</div>;
+    }
+
     return (
       <div>
         <AppNav />
@@ -28,6 +42,11 @@ class Expenses extends Component {
 
             <FormGroup>
               <label for="category">Category</label>
+
+              {categories.map((category) => (
+                <div id={category.id}>{category.name}</div>
+              ))}
+
               <Input
                 type="text"
                 name="category"
