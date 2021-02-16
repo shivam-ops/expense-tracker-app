@@ -24,6 +24,10 @@ class Expenses extends Component {
       return <div>Loading...</div>;
     }
 
+    let optionList = categories.map((category) => (
+      <option id={category.id}>{category.name}</option>
+    ));
+
     return (
       <div>
         <AppNav />
@@ -42,10 +46,7 @@ class Expenses extends Component {
 
             <FormGroup>
               <label for="category">Category</label>
-
-              {categories.map((category) => (
-                <div id={category.id}>{category.name}</div>
-              ))}
+              <select>{optionList}</select>
 
               <Input
                 type="text"
