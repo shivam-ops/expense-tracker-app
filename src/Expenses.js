@@ -56,8 +56,7 @@ class Expenses extends Component {
       <tr>
         <td>{expense.description}</td>
         <td>{expense.location}</td>
-        <td>{expense.date}</td>
-        <td>{expense.expenseDate}</td>
+        <td>{expense.expensedate}</td>
         <td>{expense.category.name}</td>
         <td>
           <Button
@@ -136,7 +135,8 @@ class Expenses extends Component {
               <tr>
                 <th width="20%">Description</th>
                 <th width="10%">Location</th>
-                <th width="">Category</th>
+                <th>Date</th>
+                <th>Category</th>
                 <th width="10%">Action</th>
               </tr>
             </thead>
