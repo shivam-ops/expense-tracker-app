@@ -3,22 +3,46 @@ import AppNav from "./AppNav";
 import DatePicker from "react-datepicker";
 import "./App.css";
 import "react-datepicker/dist/react-datepicker.css";
-import { Container, Input, Form, Button, FormGroup } from "reactstrap";
+import { Table, Container, Input, Form, Button, FormGroup } from "reactstrap";
 import { Link } from "react-router-dom";
 
 class Expenses extends Component {
-  state = { date: new Date(), isLoading: true, expenses: [], categories: [] };
+  emptyItem = {
+    id: "103",
+    expenseDate: new Date(),
+    description: "",
+    location: "",
+    categories: [1, "Travel"],
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      date: new Date(),
+      isLoading: true,
+      expenses: [],
+      categories: [],
+      item: this.emptyItem,
+    };
+  }
 
   async componentDidMount() {
     const response = await fetch("/api/categories");
     const body = await response.json();
 
     this.setState({ categories: body, isLoading: false });
+
+    const responseExp = await fetch("/api/expenses");
+    const bodyExp = await responseExp.json();
+
+    this.setState({ expenses: bodyExp, isLoading: false });
   }
 
   render() {
     const title = <h3>Add Expense</h3>;
-    const { categories, isLoading } = this.state;
+    const { categories } = this.state;
+    const { expenses, isLoading } = this.state;
 
     if (isLoading) {
       return <div>Loading...</div>;
@@ -26,6 +50,25 @@ class Expenses extends Component {
 
     let optionList = categories.map((category) => (
       <option id={category.id}>{category.name}</option>
+    ));
+
+    let rows = expenses.map((expense) => (
+      <tr>
+        <td>{expense.description}</td>
+        <td>{expense.location}</td>
+        <td>{expense.date}</td>
+        <td>{expense.expenseDate}</td>
+        <td>{expense.category.name}</td>
+        <td>
+          <Button
+            size="sm"
+            color="danger"
+            onClick={() => this.remove(expense.id)}
+          >
+            Delete
+          </Button>
+        </td>
+      </tr>
     ));
 
     return (
@@ -85,6 +128,21 @@ class Expenses extends Component {
               </Button>
             </FormGroup>
           </Form>
+        </Container>{" "}
+        <Container>
+          <h3>Expense List</h3>
+          <Table className="mt-4">
+            <thead>
+              <tr>
+                <th width="20%">Description</th>
+                <th width="10%">Location</th>
+                <th width="">Category</th>
+                <th width="10%">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>{rows}</tbody>
+          </Table>
         </Container>
       </div>
     );
