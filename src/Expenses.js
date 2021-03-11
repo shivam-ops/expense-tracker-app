@@ -27,6 +27,19 @@ class Expenses extends Component {
     };
   }
 
+  async remove(id) {
+    await fetch(`api/expenses/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then(() => {
+      let updatedExpenses = [...this.state.expenses].filter((i) => i.id !== id);
+      this.setState({ expenses: updatedExpenses });
+    });
+  }
+
   async componentDidMount() {
     const response = await fetch("/api/categories");
     const body = await response.json();
