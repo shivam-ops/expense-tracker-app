@@ -25,6 +25,44 @@ class Expenses extends Component {
       categories: [],
       item: this.emptyItem,
     };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleDateChange = this.handleDateChange(this);
+  }
+
+  async handleSubmit(event) {
+    event.preventDefault();
+    const { item } = this.state;
+    await fetch(`/api/expenses`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item),
+    });
+
+    console.log(this.state);
+    this.props.history.push("/expenses");
+  }
+
+  handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    let item = { ...this.state.item };
+    item[name] = value;
+    this.setState({ item });
+    console.log(this.state.item);
+  }
+
+  handleDateChange(date) {
+    let item = { ...this.state.item };
+    item.expenseDate = date;
+
+    this.setState({ item });
   }
 
   async remove(id) {
@@ -66,7 +104,7 @@ class Expenses extends Component {
     ));
 
     let rows = expenses.map((expense) => (
-      <tr>
+      <tr key={expense.id}>
         <td>{expense.description}</td>
         <td>{expense.location}</td>
         <td>{expense.expensedate}</td>
@@ -88,13 +126,13 @@ class Expenses extends Component {
         <AppNav />
         <Container>
           {title}
-          <Form>
+          <Form onSubmit={this.handleSubmit}>
             <FormGroup>
-              <label for="title">Title</label>
+              <label for="description">Title</label>
               <Input
-                type="text"
-                name="title"
-                id="title"
+                type="description"
+                name="description"
+                id="description"
                 onChange={this.handleChange}
               />
             </FormGroup>
