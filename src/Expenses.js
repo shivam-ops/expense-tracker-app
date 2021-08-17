@@ -1,14 +1,21 @@
-import React, { Component } from 'react';
-import AppNav from './AppNav';
-import DatePicker from 'react-datepicker';
+import React, { Component } from "react";
+import AppNav from "./AppNav";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import './App.css';
-import { Table,Container,Input,Button,Label, FormGroup, Form} from 'reactstrap';
-import {Link} from 'react-router-dom';
-import Moment from 'react-moment';
+import "./App.css";
+import {
+  Table,
+  Container,
+  Input,
+  Button,
+  Label,
+  FormGroup,
+  Form,
+} from "reactstrap";
+import { Link } from "react-router-dom";
+import Moment from "react-moment";
 
 class Expenses extends Component {
-
   // {
   //   "id": 100,
   //   "expensedate": "2019-06-16T17:00:00Z",
@@ -19,122 +26,118 @@ class Expenses extends Component {
   //   "name": "Travel"
   //   }
   //   },
- 
-    emptyItem = {
-        description : '' ,
-        expenseDate : new Date(),
-        id:104,
-        location : '',
-        category : {id:1 , name:'Travel'}
-    }
-    
-    constructor(props){
-      super(props)
 
-      this.state = { 
-        isLoading :false,
-        categories:[],
-        expenses : [],
-        date :new Date(),
-        item : this.emptyItem
-       }
+  emptyItem = {
+    description: "",
+    expenseDate: new Date(),
+    id: 104,
+    location: "",
+    category: { id: 1, name: "Travel" },
+  };
 
-       this.handleSubmit= this.handleSubmit.bind(this);
-       this.handleChange= this.handleChange.bind(this);
-       this.handleDateChange= this.handleDateChange.bind(this);
+  constructor(props) {
+    super(props);
 
-    } 
+    this.state = {
+      isLoading: false,
+      categories: [],
+      expenses: [],
+      date: new Date(),
+      item: this.emptyItem,
+    };
 
-    async handleSubmit(event){
-     
-      const item = this.state.item;
-      await fetch(`/api/expenses`, {
-        method : 'POST',
-        headers : {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body : JSON.stringify(item),
-      });
-      
-      event.preventDefault();
-      this.props.history.push("/expenses");
-    }
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
+  }
 
-    handleChange(event){
-      const target= event.target;
-      const value= target.value;
-      const name = target.name;
-      let item={...this.state.item};
-      item[name] = value;
-      this.setState({item});
-      console.log(item);
-    }
+  async handleSubmit(event) {
+    const item = this.state.item;
+    await fetch(`/api/expenses`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item),
+    });
 
+    event.preventDefault();
+    this.props.history.push("/expenses");
+  }
 
-    handleDateChange(date){
-      let item={...this.state.item};
-      item.expenseDate= date;
-      this.setState({item});
-    
-    }
+  handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { ...this.state.item };
+    item[name] = value;
+    this.setState({ item });
+    console.log(item);
+  }
 
+  handleDateChange(date) {
+    let item = { ...this.state.item };
+    item.expenseDate = date;
+    this.setState({ item });
+    console.log(item);
+  }
 
-    async remove(id){
-        await fetch(`/api/expenses/${id}` , {
-          method: 'DELETE' ,
-          headers : {
-            'Accept' : 'application/json',
-            'Content-Type' : 'application/json'
-          }
+  async remove(id) {
+    await fetch(`/api/expenses/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then(() => {
+      let updatedExpenses = [...this.state.expenses].filter((i) => i.id !== id);
+      this.setState({ expenses: updatedExpenses });
+    });
+  }
 
-        }).then(() => {
-          let updatedExpenses = [...this.state.Expsenses].filter(i => i.id !== id);
-          this.setState({Expsenses : updatedExpenses});
-        });
+  async componentDidMount() {
+    // const response = await fetch("/api/categories");
+    // const body = await response.json();
+    // this.setState({ Categories: body, isLoading: false });
 
-    }
+    const responseExp = await fetch("/api/expenses");
+    const bodyExp = await responseExp.json();
+    this.setState({ expenses: bodyExp, isLoading: false });
+    console.log(bodyExp);
+  }
 
-    async componentDidMount() {
-        const response= await fetch('/api/categories');
-        const body= await response.json();
-        this.setState({Categories : body , isLoading :false});
+  render() {
+    const title = <h3>Add Expense</h3>;
+    const { expenses, categories, isLoading } = this.state;
 
+    if (isLoading) return <div>Loading....</div>;
 
-        // const responseExp= await fetch('/api/expenses');
-        // const bodyExp = await responseExp.json();
-        // this.setState({Expenses : bodyExp , isLoading :false});
-        // console.log(bodyExp);
+    let optionList = categories.map((category) => (
+      <option value={category.id} key={category.id}>
+        {category.name}
+      </option>
+    ));
 
-    }
-
-    render() { 
-        const title =<h3>Add Expense</h3>;
-        const {expenses, categories, isLoading} =this.state;
-  
-        if (isLoading)
-            return(<div>Loading....</div>)
-
-        let optionList  =
-                categories.map( (category) =>
-                    <option value={category.id} key={category.id}>
-                                {category.name} 
-                    </option>
-                )
-        
-        let rows=
-            expenses.map( expense =>
-              <tr key={expense.id}>
-                <td>{expense.description}</td>
-                <td>{expense.location}</td>
-                <td><Moment date={expense.expensedate} format="YYYY/MM/DD"/></td>
-                <td>{expense.category.name}</td>
-                <td><Button size="sm" color="danger" onClick={() => this.remove(expense.id)}>Delete</Button></td>
-
-              </tr>
-
-
-            )
+    let rows = expenses.map((expense) => (
+      <tr key={expense.id}>
+        <td>{expense.description}</td>
+        <td>{expense.location}</td>
+        <td>
+          <Moment date={expense.expensedate} format="YYYY/MM/DD" />
+        </td>
+        <td>{expense.category.name}</td>
+        <td>
+          <Button
+            size="sm"
+            color="danger"
+            onClick={() => this.remove(expense.id)}
+          >
+            Delete
+          </Button>
+        </td>
+      </tr>
+    ));
 
     return (
       <div>
