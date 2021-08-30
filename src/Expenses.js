@@ -97,9 +97,9 @@ class Expenses extends Component {
   }
 
   async componentDidMount() {
-    // const response = await fetch("/api/categories");
-    // const body = await response.json();
-    // this.setState({ Categories: body, isLoading: false });
+    const response = await fetch("/api/categories");
+    const body = await response.json();
+    this.setState({ categories: body, isLoading: false });
 
     const responseExp = await fetch("/api/expenses");
     const bodyExp = await responseExp.json();
@@ -159,12 +159,12 @@ class Expenses extends Component {
               <label for="category">Category</label>
               <select>{optionList}</select>
 
-              <Input
+              {/* <Input
                 type="text"
                 name="category"
                 id="category"
                 onChange={this.handleChange}
-              />
+              /> */}
             </FormGroup>
 
             <FormGroup>
